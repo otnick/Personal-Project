@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;
@@ -9,6 +8,8 @@ public class PlayerController : MonoBehaviour
     public float tiltMaxDeg = 40f;    // maximaler Neigungswinkel (hoch/runter)
     public float tiltLerp = 36f;      // wie schnell ins Ziel kippen
     private Rigidbody rb;
+    public AnimatorScript animatorScript;
+    public AudioSource audioSource;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +23,7 @@ public class PlayerController : MonoBehaviour
         // movement on x and y axes
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
+        float spaceInput = Input.GetKeyDown(KeyCode.Space) ? 1f : 0f;
 
         Vector3 targetVelocity = new Vector3(horizontalInput, verticalInput, 0).normalized * speed;
         velocity = Vector3.MoveTowards(velocity, targetVelocity, acceleration * Time.deltaTime);
@@ -39,10 +41,17 @@ public class PlayerController : MonoBehaviour
 
         // --- Flip (Y) nur bei Links/Rechts-Input ---
         float targetY = transform.eulerAngles.y; // beibehalten, wenn keine Eingabe
-        if (horizontalInput > 0f)      targetY = 180f;
+        if (horizontalInput > 0f) targetY = 180f;
         else if (horizontalInput < 0f) targetY = 0f;
 
         // eine Rotation setzen (Y = Flip, Z = Tilt)
         transform.rotation = Quaternion.Euler(0f, targetY, currentTiltZ);
+
+        // eating action
+        if (spaceInput > 0f)
+        {
+            animatorScript.PlayEatAnimation();
+            if (!audioSource.isPlaying) audioSource.Play();
+        }
     }
 }
