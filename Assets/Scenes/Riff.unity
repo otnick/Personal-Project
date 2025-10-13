@@ -6098,9 +6098,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2146354710}
   - component: {fileID: 2146354711}
+  - component: {fileID: 2146354712}
   m_Layer: 0
-  m_Name: Game Music
-  m_TagString: Untagged
+  m_Name: Music Player
+  m_TagString: Music
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6133,9 +6134,9 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 936c2042f1156314b80fab0490c5baaf, type: 3}
   m_Resource: {fileID: 8300000, guid: 936c2042f1156314b80fab0490c5baaf, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.515
+  m_Volume: 0.5
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -6217,6 +6218,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2146354712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146354709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc822c8316dfdae44b290cde69a8f00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
