@@ -3,7 +3,12 @@ guid: ab655178f3d40644a9e29f6db261059c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Anglerfish_Fins
+    second: {fileID: 2100000, guid: 1af0975f5389e07488b190132bb4f5ce, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
