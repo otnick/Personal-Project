@@ -15,9 +15,14 @@ public class AnimatorScript : MonoBehaviour
     {
 
     }
-    
+
     public void PlayEatAnimation()
     {
         animator.SetTrigger("eat");
+    }
+    
+    public void PlayDieAnimation()
+    {
+        animator.SetTrigger("die");
     }
 }

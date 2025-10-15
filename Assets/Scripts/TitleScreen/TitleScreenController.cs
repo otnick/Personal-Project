@@ -7,7 +7,7 @@ public class TitleScreenController : MonoBehaviour
     public float acceleration = 2f;
     public float deceleration = 1f;
     private Vector3 velocity = Vector3.zero;
-    public float tiltMaxDeg = 10f;   // kleiner, subtiler Effekt
+    public float tiltMaxDeg = 10f;
     public float tiltLerp = 2f;
     public AnimatorScript animatorScript;
     public AudioSource audioSource;
@@ -49,10 +49,9 @@ public class TitleScreenController : MonoBehaviour
         float currentTiltZ = Mathf.LerpAngle(transform.eulerAngles.z, targetTiltZ, tiltLerp * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltZ);
 
-        // Space = Eat + Scenewechsel
+        // switch to main scene
          if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (animatorScript) animatorScript.PlayEatAnimation();
             if (audioSource && !audioSource.isPlaying) audioSource.Play();
             StartCoroutine(DiveAndFade());
         }

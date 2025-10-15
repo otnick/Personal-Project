@@ -575,7 +575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &588395912
 Transform:
   m_ObjectHideFlags: 0
@@ -5569,6 +5569,7 @@ GameObject:
   - component: {fileID: 829690126}
   - component: {fileID: 829690130}
   - component: {fileID: 829690132}
+  - component: {fileID: 829690133}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -5588,14 +5589,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ced4dab4a45c34ca55105a8f6d19b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boostMult: 1.5
+  boostDuration: 2
+  boostCooldown: 5
   acceleration: 20
   deceleration: 10
   tiltMaxDeg: 40
   tiltLerp: 36
   animatorScript: {fileID: 1283319093}
-  audioSource: {fileID: 0}
+  biteSound: {fileID: 962588274}
   fadeGroup: {fileID: 157381804}
   fadeInDuration: 0.5
+  boosting: 0
+  damage: 10
+  biteCooldown: 0.4
+  agentMask:
+    serializedVersion: 2
+    m_Bits: 8
+  attackerStats: {fileID: 829690130}
+  damageable: {fileID: 829690132}
 --- !u!65 &829690127
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5676,7 +5688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 1
   baseSpeed: 5
-  visual: {fileID: 0}
+  visual: {fileID: 829690129}
   speedPerSize: 1
 --- !u!114 &829690132
 MonoBehaviour:
@@ -5692,6 +5704,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 20
   currentHealth: 0
+--- !u!114 &829690133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829690125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565528a98ae3764409c7e0e8a2d1d648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxEnergy: 100
+  currentEnergy: 0
+  energyDrainageRate: 2
 --- !u!1 &887432002
 GameObject:
   m_ObjectHideFlags: 0
@@ -6594,6 +6621,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 829690125}
   followSpeed: 2
+  fadeGroup: {fileID: 157381804}
+  fadeInDuration: 1
 --- !u!1 &1837575569
 GameObject:
   m_ObjectHideFlags: 0

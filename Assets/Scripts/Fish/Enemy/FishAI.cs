@@ -10,6 +10,7 @@ public class FishAI : MonoBehaviour
     public float idleSpeed = 2f;      // Basisspeed im Random-Drift
     public float idleTurnEvery = 3f;  // Sekunden bis neue Idle-Richtung
     public float sizeMargin = 1.0f;   // "größer als" = my.size > other.size * sizeMargin
+    public Damageable damageable; // reference to self damageable component
 
     Rigidbody rb;
     Vector3 idleDir = Vector3.right;
@@ -24,12 +25,13 @@ public class FishAI : MonoBehaviour
                          RigidbodyConstraints.FreezeRotationY |
                          RigidbodyConstraints.FreezeRotationZ;
         if (!stats) stats = GetComponent<AgentStats>();
+        if (!damageable) damageable = GetComponent<Damageable>();
         PickNewIdle();
     }
 
     void FixedUpdate()
     {
-        // Fallback: Everything wenn im Inspector kein Mask gesetzt
+        // Fallback
         int mask = agentMask.value != 0 ? agentMask.value : ~0;
 
         var hits = Physics.OverlapSphere(
@@ -62,8 +64,7 @@ public class FishAI : MonoBehaviour
                 if (distSqr < dBig) { dBig = distSqr; nearestBigger = h.transform; }
             }
         }
-
-        if (nearestBigger) MoveSimple((nearestBigger.position - pos).normalized * -1f, hunt:false); // flee
+        if (nearestBigger ) MoveSimple((nearestBigger.position - pos).normalized * -1f, hunt:false); // flee
         else if (nearestSmaller) MoveSimple((nearestSmaller.position - pos).normalized, hunt:true);  // chase
         else IdleSimple(); // random drift
 
@@ -72,6 +73,7 @@ public class FishAI : MonoBehaviour
 
     void MoveSimple(Vector3 dir, bool hunt)
     {
+        if(damageable != null && damageable.currentHealth <= 0f) return; // dead fish don't move
         float maxSpeed = stats ? stats.CurrentSpeed : 6f;
         dir.z = 0f;
         if (dir.sqrMagnitude < 1e-6f) return;
@@ -90,6 +92,7 @@ public class FishAI : MonoBehaviour
 
     void IdleSimple()
     {
+        if(damageable != null && damageable.currentHealth <= 0f) return; // dead fish don't move
         if (Time.time >= nextIdleTurn) PickNewIdle();
         float maxSpeed = stats ? stats.CurrentSpeed : 6f;
 
