@@ -47,7 +47,8 @@ public class BiteOnContact : MonoBehaviour
             float finalDamage = damage * dmgMult;
             targetHp.TakeDamage(finalDamage);
 
-            attackerHp.Heal(finalDamage * 0.5f);  // heal % of dealt damage
+            // maybe not cool for now
+            // attackerHp.Heal(finalDamage * 0.5f);  // heal % of dealt damage
 
 
             //  sound/animation

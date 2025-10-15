@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(RectTransform))]
 public class HpBar : MonoBehaviour
 {
     public Damageable target;          // Root des Fisches
@@ -9,18 +10,24 @@ public class HpBar : MonoBehaviour
     public Gradient colorByHp;         // grün→gelb→rot
     public float visibleTime = 1.4f;   // wie lange nach Hit sichtbar
     public float fadeSpeed = 6f;       // Ausblendgeschwindigkeit
-    public Vector3 worldOffset = new Vector3(0, 1.0f, 0);
+    public Vector3 worldOffset = new Vector3(0f, 1f, 0f);
 
     float tVisible;
     Camera cam;
+    RectTransform rt;
+    Canvas rootCanvas;
 
     void Awake()
     {
+        rt = GetComponent<RectTransform>();
+        rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
         cam = Camera.main;
+
         if (!target) target = GetComponentInParent<Damageable>();
-        if (!group) group = GetComponent<CanvasGroup>();
+        if (!group)  group  = GetComponent<CanvasGroup>();
+
         if (target) target.OnDamaged += OnDamaged;
-        group.alpha = 0f;
+        if (group)  group.alpha = 0f;
     }
 
     void OnDestroy()
@@ -30,15 +37,47 @@ public class HpBar : MonoBehaviour
 
     void LateUpdate()
     {
-        // über dem Fisch „kleben“
-        if (target) transform.position = target.transform.position + worldOffset;
+        if (!target || rt == null || rootCanvas == null) return;
 
-        // zur Kamera ausrichten (billboard)
-        if (cam) transform.forward = cam.transform.forward;
+        Vector3 worldPos = target.transform.position + worldOffset;
 
-        // ausblenden nach Zeit
-        float targetAlpha = Time.time < tVisible ? 1f : 0f;
-        group.alpha = Mathf.MoveTowards(group.alpha, targetAlpha, fadeSpeed * Time.deltaTime);
+        switch (rootCanvas.renderMode)
+        {
+            case RenderMode.WorldSpace:
+                // Direkt in die Welt setzen + „billboarden“
+                transform.position = worldPos;
+                if (cam) transform.forward = cam.transform.forward;
+                break;
+
+            case RenderMode.ScreenSpaceCamera:
+            {
+                if (!cam) cam = rootCanvas.worldCamera ?? Camera.main;
+                Vector2 sp = RectTransformUtility.WorldToScreenPoint(cam, worldPos);
+                RectTransform canvasRT = rootCanvas.transform as RectTransform;
+                Vector2 local;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRT, sp, cam, out local);
+                rt.anchoredPosition = local;
+                break;
+            }
+
+            case RenderMode.ScreenSpaceOverlay:
+            default:
+            {
+                Vector2 sp = RectTransformUtility.WorldToScreenPoint(cam, worldPos); // cam darf null sein bei Overlay
+                RectTransform canvasRT = rootCanvas.transform as RectTransform;
+                Vector2 local;
+                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRT, sp, null, out local);
+                rt.anchoredPosition = local;
+                break;
+            }
+        }
+
+        // Ein-/Ausblenden
+        if (group)
+        {
+            float targetAlpha = Time.time < tVisible ? 1f : 0f;
+            group.alpha = Mathf.MoveTowards(group.alpha, targetAlpha, fadeSpeed * Time.deltaTime);
+        }
     }
 
     void OnDamaged(float dmg, float normalizedHp)
@@ -49,6 +88,6 @@ public class HpBar : MonoBehaviour
             if (colorByHp != null) fill.color = colorByHp.Evaluate(fill.fillAmount);
         }
         tVisible = Time.time + visibleTime;
-        group.alpha = 1f; // sofort zeigen
+        if (group) group.alpha = 1f; // sofort zeigen
     }
 }

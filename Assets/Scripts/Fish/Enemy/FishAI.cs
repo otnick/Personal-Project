@@ -120,14 +120,4 @@ public class FishAI : MonoBehaviour
         float zTilt = Mathf.Clamp(v.y * 10f, -25f, 25f);
         transform.rotation = Quaternion.Euler(0f, yFlip, zTilt);
     }
-
-#if UNITY_EDITOR
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = new Color(0f, 1f, 1f, 0.15f);
-        Gizmos.DrawSphere(transform.position, senseRadius);
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, senseRadius);
-    }
-#endif
 }
