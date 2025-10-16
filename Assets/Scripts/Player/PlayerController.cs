@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public CanvasGroup fadeGroup;
 
     [Header("Fade")]
-    public float fadeInDuration = 1f;
+    public float fadeInDuration = 3f;
 
     private Rigidbody rb;
 
@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
     [Header("Bite Attack")]
     public float damage = 10f;
     public float biteCooldown = 0.4f;
-    private float nextBiteTime;
     public LayerMask agentMask;
     public AgentStats attackerStats;
     public Damageable damageable; // reference to self damageable component
@@ -79,6 +78,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if(damageable != null && damageable.isDead)
+        {
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
+            return; // no movement or actions when dead
+        }
         // Eingaben
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");

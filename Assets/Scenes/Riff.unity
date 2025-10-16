@@ -119,52 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &21878497
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 21878500}
-  - component: {fileID: 21878501}
-  m_Layer: 0
-  m_Name: GameController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &21878500
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 21878497}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 960, y: 540, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &21878501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 21878497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c79bf4c7b952ad6479761a991f003c8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  killCounter: {fileID: 323867753}
-  gameTimer: {fileID: 612243631}
 --- !u!1 &157381802
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,6 +902,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timerText: {fileID: 612243629}
+  elapsed: 0
 --- !u!1 &616350407
 GameObject:
   m_ObjectHideFlags: 0
@@ -5909,6 +5864,7 @@ MonoBehaviour:
     m_Bits: 8
   attackerStats: {fileID: 829690130}
   damageable: {fileID: 829690132}
+  isDead: 0
 --- !u!65 &829690127
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6004,6 +5960,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 20
   currentHealth: 0
+  isDead: 0
 --- !u!114 &829690133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6525,7 +6482,7 @@ MonoBehaviour:
   attackerStats: {fileID: 829690130}
   animatorScript: {fileID: 1283319093}
   biteSound: {fileID: 962588274}
-  gameController: {fileID: 21878501}
+  gameController: {fileID: 0}
 --- !u!1 &1031304037
 GameObject:
   m_ObjectHideFlags: 0
@@ -7479,4 +7436,3 @@ SceneRoots:
   - {fileID: 314142798}
   - {fileID: 1715341760371869681}
   - {fileID: 1031304041}
-  - {fileID: 21878500}

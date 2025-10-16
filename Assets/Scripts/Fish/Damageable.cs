@@ -5,6 +5,7 @@ public class Damageable : MonoBehaviour
 {
     public float maxHealth = 50f;
     public float currentHealth;
+    public bool isDead = false;
     private Animator animator;
 
     public event Action<float, float> OnDamaged; // (damage, normalizedHp 0..1)
@@ -41,8 +42,16 @@ public class Damageable : MonoBehaviour
 
     void Die()
     {
+        isDead = true;
         animator?.SetBool("dead", true);
         animator?.SetTrigger("die");
         Destroy(gameObject, 3f);
+    }
+
+    public void Revive()
+    {
+        isDead = false;
+        currentHealth = maxHealth;
+        animator?.SetBool("dead", false);
     }
 }
