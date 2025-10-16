@@ -30,15 +30,15 @@ public class BiteOnContact : MonoBehaviour
         int mask = agentMask.value != 0 ? agentMask.value : ~0;
         if (((1 << other.gameObject.layer) & mask) == 0) return;
 
-        // Nicht sich selbst
+        // not myself
         if (other.transform.root == transform.root) return;
 
-        // Enemy has to have stats + health
+        // enemy with stats and health
         var targetStats = other.GetComponentInParent<AgentStats>();
         var targetHp    = other.GetComponentInParent<Damageable>();
         if (targetStats == null || targetHp == null || targetHp.currentHealth <= 0f) return;
 
-        // Always bite
+        // bite all
         var attackerHp = GetComponentInParent<Damageable>();
         if (attackerHp != null && attackerHp.currentHealth > 0f)
         {

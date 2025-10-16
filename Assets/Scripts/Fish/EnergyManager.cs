@@ -6,8 +6,6 @@ public class EnergyManager : MonoBehaviour
     public float maxEnergy = 100f;
     public float currentEnergy;
     public float energyDrainageRate = 2f;
-
-    // Event: (delta, normalized 0..1)
     public event Action<float, float> OnEnergyChanged;
 
     void Awake()

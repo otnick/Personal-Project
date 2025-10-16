@@ -14,13 +14,11 @@ public class SpawnManager : MonoBehaviour
     public GameObject player;
     public float spawnsPerMinute = 30f;
     float acc;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         SpawnOne();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!player) return;
@@ -33,7 +31,7 @@ public class SpawnManager : MonoBehaviour
     {
         if (enemyEntries == null || enemyEntries.Length == 0) return;
 
-        // gewichtete Auswahl
+        // weighted selection
         float total = 0f;
         foreach (var e in enemyEntries) total += Mathf.Max(0.0001f, e.spawnRate);
         float r = Random.value * total;
@@ -45,17 +43,17 @@ public class SpawnManager : MonoBehaviour
             {
                 Vector3 playerPos = player.transform.position;
                 Vector3 pos = Vector3.zero;
-                float minDistance = 8f;   // <- Gegner dürfen nicht näher als 8 Einheiten spawnen
-                int safety = 30;          // <- maximal 30 Versuche, um Endlosschleifen zu vermeiden
+                float minDistance = 8f;   // enemies must spawn at least 8 units away
+                int safety = 30;          // max 30 attempts to avoid infinite loops
 
                 for (int i = 0; i < safety; i++)
                 {
-                    // Zufälligen Punkt rund um den Spieler
+                    // random point around the player
                     Vector3 offset = new Vector3(Random.Range(areaX.x, areaX.y),
                                                 Random.Range(areaY.x, areaY.y), 0f);
                     pos = playerPos + offset;
 
-                    // Prüfen: weit genug weg?
+                    // far enough away?
                     if (Vector3.Distance(playerPos, pos) >= minDistance)
                         break;
                 }

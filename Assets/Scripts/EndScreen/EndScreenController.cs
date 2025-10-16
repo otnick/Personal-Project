@@ -69,8 +69,6 @@ public class EndScreenController : MonoBehaviour
 
     System.Collections.IEnumerator FadeTransition()
     {
-        // Falls du irgendwo pausierst:
-        // Time.timeScale kann 0 sein -> darum unscaled benutzen
         float t = 0f;
         float fadeT = 0f;
 
@@ -78,11 +76,9 @@ public class EndScreenController : MonoBehaviour
         float invFade = 1f / Mathf.Max(0.0001f, fadeDuration);
         float startDelayNorm = fadeDelay * invDive;
 
-        // Optional: kleinen unscaled-Delay zwischen Biss und Fade
         if (fadeDelay > 0f)
             yield return new WaitForSecondsRealtime(fadeDelay);
 
-        // Fadeloop mit unscaledDeltaTime
         while (t < 1f || (fadeGroup && fadeGroup.alpha < 1f))
         {
             float dt = Time.unscaledDeltaTime;
@@ -91,7 +87,6 @@ public class EndScreenController : MonoBehaviour
 
             if (fadeGroup)
             {
-                // Start des eigentlichen Fades nach „startDelayNorm“
                 if (t >= startDelayNorm)
                     fadeT += dt * invFade;
 
@@ -101,10 +96,8 @@ public class EndScreenController : MonoBehaviour
             yield return null;
         }
 
-        // Sicherheits-Set
         if (fadeGroup) fadeGroup.alpha = 1f;
 
-        // Szene laden (achte auf Build Settings)
         UnityEngine.SceneManagement.SceneManager.LoadScene("Riff");
     }
 }

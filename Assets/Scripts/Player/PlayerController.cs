@@ -24,8 +24,6 @@ public class PlayerController : MonoBehaviour
     [Header("Fade")]
     public float fadeInDuration = 3f;
 
-    private Rigidbody rb;
-
     [Header("Boost")]
     public bool boosting = false;
     private float boostEndTime = 0f;
@@ -35,8 +33,11 @@ public class PlayerController : MonoBehaviour
     public float damage = 10f;
     public float biteCooldown = 0.4f;
     public LayerMask agentMask;
+
+    [Header("Stats & Damage")]
     public AgentStats attackerStats;
     public Damageable damageable; // reference to self damageable component
+    private Rigidbody rb;
 
     // fade in
     public System.Collections.IEnumerator FadeIn()
@@ -83,10 +84,9 @@ public class PlayerController : MonoBehaviour
             velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
             return; // no movement or actions when dead
         }
-        // Eingaben
+        // inputs
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-        bool spaceDown = Input.GetKeyDown(KeyCode.Space);
         bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
 
         // Basis-Speed evtl. aus Stats aktualisieren
@@ -127,13 +127,6 @@ public class PlayerController : MonoBehaviour
             float targetY = transform.eulerAngles.y;
             if (h > 0f) targetY = 0f; else if (h < 0f) targetY = 180f;
             transform.rotation = Quaternion.Euler(0f, targetY, currentTiltZ);
-
-            // Eat-Action
-            // if (spaceDown && animatorScript)
-            // {
-            //     if (animatorScript) animatorScript.PlayEatAnimation();
-            //     if (audioSource && !audioSource.isPlaying) audioSource.Play();
-            // }
         }
     }
 

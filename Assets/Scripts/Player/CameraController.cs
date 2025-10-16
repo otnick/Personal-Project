@@ -6,17 +6,12 @@ public class CameraController : MonoBehaviour
     public float followSpeed = 2f;
     private Vector3 offset;
 
-    // Refs for fade in
-    public CanvasGroup fadeGroup;
-    public float fadeInDuration = 1f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         offset = transform.position - player.transform.position;
-        if (fadeGroup) { fadeGroup.alpha = 1f; StartCoroutine(FadeIn()); }
     }
 
-    // Update is called once per frame
+    // LateUpdate to make camera movement smoother
     void LateUpdate()
     {
         if (!player) return;
@@ -27,13 +22,5 @@ public class CameraController : MonoBehaviour
         float targetSize = player.GetComponent<PlayerController>().boosting ? 6f : 5f;
         Camera cam = GetComponent<Camera>();
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetSize, 3f * Time.deltaTime);
-    }
-
-    // fade in
-    public System.Collections.IEnumerator FadeIn()
-    {
-        float t = 0f, dur = Mathf.Max(0.01f, fadeInDuration);
-        while (t < dur) { t += Time.deltaTime; fadeGroup.alpha = 1f - Mathf.Clamp01(t / dur); yield return null; }
-        fadeGroup.alpha = 0f;
     }
 }

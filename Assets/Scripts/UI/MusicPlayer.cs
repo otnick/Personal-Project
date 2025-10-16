@@ -5,11 +5,10 @@ public class MusicPlayer : MonoBehaviour
 {
     public AudioClip[] audioClips;
     private AudioSource audioSource;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
     }
-    
+    // play a random song and keep player alaive between scenes
     void Awake()
     {
         // Sicherstellen, dass nur ein Player existiert
@@ -22,16 +21,14 @@ public class MusicPlayer : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        // AudioSource automatisch anlegen (wenn nicht vorhanden)
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        audioSource.loop = true;           // Musik soll durchlaufen
-        audioSource.playOnAwake = false;   // erst starten, wenn wir’s sagen
+        audioSource.loop = true; 
+        audioSource.playOnAwake = false;
         audioSource.volume = 0.5f;
 
-        // Zufälligen Song starten
         if (audioClips.Length > 0)
         {
             int randomIndex = Random.Range(0, audioClips.Length);
@@ -39,8 +36,6 @@ public class MusicPlayer : MonoBehaviour
             audioSource.Play();
         }
     }
-
-    // Update is called once per frame
     void Update()
     {
         

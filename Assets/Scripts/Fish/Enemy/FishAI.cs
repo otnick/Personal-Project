@@ -4,12 +4,12 @@ using UnityEngine;
 public class FishAI : MonoBehaviour
 {
     public AgentStats stats;
-    public LayerMask agentMask;       // Layer für Spieler+Gegner
-    public float senseRadius = 12f;   // Wahrnehmungsradius
-    public float accel = 20f;         // wie schnell wir Richtung Zielgeschwindigkeit blenden
-    public float idleSpeed = 2f;      // Basisspeed im Random-Drift
-    public float idleTurnEvery = 3f;  // Sekunden bis neue Idle-Richtung
-    public float sizeMargin = 1.0f;   // "größer als" = my.size > other.size * sizeMargin
+    public LayerMask agentMask;       // Layer applied to player and fish
+    public float senseRadius = 12f; 
+    public float accel = 20f;
+    public float idleSpeed = 2f; 
+    public float idleTurnEvery = 3f;
+    public float sizeMargin = 1.0f;   // larger than = my.size > other.size * sizeMargin
     public Damageable damageable; // reference to self damageable component
 
     Rigidbody rb;
@@ -31,7 +31,7 @@ public class FishAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Fallback
+        // Fallback if no agent mask is set
         int mask = agentMask.value != 0 ? agentMask.value : ~0;
 
         var hits = Physics.OverlapSphere(
@@ -78,7 +78,7 @@ public class FishAI : MonoBehaviour
         dir.z = 0f;
         if (dir.sqrMagnitude < 1e-6f) return;
 
-        Vector3 desiredVel = dir.normalized * maxSpeed; // beim Jagen KEIN Arrive – Kontakt erwünscht
+        Vector3 desiredVel = dir.normalized * maxSpeed; // no arrive when hunting
         rb.linearVelocity = Vector3.MoveTowards(
             rb.linearVelocity,
             desiredVel,

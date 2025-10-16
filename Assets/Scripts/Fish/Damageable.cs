@@ -8,7 +8,7 @@ public class Damageable : MonoBehaviour
     public bool isDead = false;
     private Animator animator;
 
-    public event Action<float, float> OnDamaged; // (damage, normalizedHp 0..1)
+    public event Action<float, float> OnDamaged; 
 
     void Awake() => currentHealth = maxHealth;
 
