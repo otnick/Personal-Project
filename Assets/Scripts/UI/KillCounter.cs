@@ -7,6 +7,7 @@ public class KillCounter : MonoBehaviour
 
     private void Start()
     {
+        DontDestroyOnLoad(gameObject);
         UpdateKillCountText();
     }
 

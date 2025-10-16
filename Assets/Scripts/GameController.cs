@@ -19,6 +19,8 @@ public class GameController : MonoBehaviour
     public float fadeOutDur = 0.8f;
     public float fadeInDur = 0.4f;
     private bool gameEnded = false;
+    public int lastRunKills;
+    public float lastRunTime;
 
     void Awake()
     {
@@ -86,6 +88,8 @@ public class GameController : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
+        lastRunKills = killCounter ? killCounter.GetKillCount() : 0;
+        lastRunTime  = gameTimer   ? gameTimer.elapsed : 0f;
         StartCoroutine(GameOverDelay());
         return;
 
