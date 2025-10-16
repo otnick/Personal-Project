@@ -57,7 +57,7 @@ public class TitleScreenController : MonoBehaviour
         }
     }
 
-     System.Collections.IEnumerator DiveAndFade()
+    System.Collections.IEnumerator DiveAndFade()
     {
         transitioning = true;
 
