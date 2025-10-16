@@ -9,7 +9,6 @@ public class Timer : MonoBehaviour
     public float elapsed = 0f;
     void Start()
     {
-        DontDestroyOnLoad(gameObject);
         startTime = Time.time;
     }
 
