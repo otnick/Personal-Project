@@ -14,11 +14,13 @@ public class BiteOnSpace : MonoBehaviour
     public AnimatorScript animatorScript;
     public AudioSource biteSound;
     public GameController gameController;
+    private EnergyManager energyManager;
 
     float nextBiteTime;
 
     void Start()
     {
+        energyManager = GetComponentInParent<EnergyManager>();
         gameController = FindFirstObjectByType<GameController>();
     }
 
@@ -87,6 +89,12 @@ public class BiteOnSpace : MonoBehaviour
             float ratio   = Mathf.Max(0.001f, attackerStats.size / targetStats.size);
             float dmgMult = Mathf.Clamp(ratio, 0.2f, 2.5f); // smaller → 20 %, much larger → 250 %
             float finalDamage = damage * dmgMult;
+
+            if (energyManager != null)
+            {
+                // Energiegewinn beim erfolgreichen Biss
+                energyManager.currentEnergy = Mathf.Min(energyManager.maxEnergy, energyManager.currentEnergy + finalDamage * 0.5f);
+            }
 
             bool isDead = targetHp.TakeDamage(finalDamage);
             if (isDead && gameController != null)
