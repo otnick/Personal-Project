@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
     public AgentStats attackerStats;
     public Damageable damageable; // reference to self damageable component
     private Rigidbody rb;
+    private EnergyManager energyManager;
 
     // fade in
     public System.Collections.IEnumerator FadeIn()
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour
 
         var stats = GetComponent<AgentStats>();
         damageable = GetComponent<Damageable>();
+        energyManager = GetComponent<EnergyManager>();
         if (stats)
         {
             baseSpeed = stats.CurrentSpeed;
@@ -92,9 +94,24 @@ public class PlayerController : MonoBehaviour
         // Basis-Speed evtl. aus Stats aktualisieren
         var stats = GetComponent<AgentStats>();
         if (stats) baseSpeed = stats.CurrentSpeed;
+        // Energie-Check für Boost
+        if (energyManager != null && energyManager.currentEnergy > 0f)
+        {
+            // Energieverbrauch beim Boost
+            if (boosting)
+            {
+                energyManager.currentEnergy = Mathf.Max(0f, energyManager.currentEnergy - energyManager.energyDrainageRate * Time.deltaTime * 2f);
+                if (energyManager.currentEnergy <= 0f) { boosting = false; } // kein Boost mehr bei leerer Energie
+            }
+        }
+        else
+        {
+            boosting = false; // kein Boost wenn keine Energie
+            baseSpeed = baseSpeed * 0.5f;
+        }
 
         // Boost starten? (einmalig, mit Cooldown)
-        if (shiftDown && Time.time >= nextBoostTime && !boosting && damageable != null && damageable.currentHealth > 0f)
+        if (shiftDown && Time.time >= nextBoostTime && !boosting && damageable != null && damageable.currentHealth > 0f && energyManager != null && energyManager.currentEnergy > 0f)
         {
             boosting = true;
             boostEndTime = Time.time + boostDuration;
