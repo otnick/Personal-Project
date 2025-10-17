@@ -6,11 +6,11 @@ public class BiteOnSpace : MonoBehaviour
     [Header("Bite")]
     public float damage = 25f;
     public float biteCooldown = 0.4f;
-    public LayerMask agentMask;              // z. B. "Agent"
-    public float fallbackRadius = 0.8f;      // falls kein Sphere/Box/CapsuleCollider
+    public LayerMask agentMask;
+    public float fallbackRadius = 0.8f; 
 
-    [Header("Refs (auto bei Reset, sonst Inspector)")]
-    public AgentStats attackerStats;         // vom Parent
+    [Header("Refs")]
+    public AgentStats attackerStats;
     public AnimatorScript animatorScript;
     public AudioSource biteSound;
     public GameController gameController;
@@ -21,11 +21,11 @@ public class BiteOnSpace : MonoBehaviour
     void Start()
     {
         energyManager = GetComponentInParent<EnergyManager>();
+        gameController = FindFirstObjectByType<GameController>();
     }
 
     void Reset()
     {
-        // BiteZone-Collider als Trigger (wir machen aktiven Check beim Tastendruck)
         var col = GetComponent<Collider>();
         col.isTrigger = true;
 
@@ -45,27 +45,27 @@ public class BiteOnSpace : MonoBehaviour
         if (Time.time < nextBiteTime) return;
         if (!attackerStats) return;
 
-        // Angreifer lebt?
+        // attacker alive?
         var attackerHp = GetComponentInParent<Damageable>();
         if (attackerHp == null || attackerHp.currentHealth <= 0f) return;
 
-        // --- 1) Reichweite bestimmen (aus Collider an der BiteZone) ---
+        // calc range
         float radius = GetBiteRadius();
 
-        // --- 2) Overlap um die BiteZone (einmaliger Scan) ---
+        // check for overlapping agents
         int mask = agentMask.value != 0 ? agentMask.value : ~0;
         var hits = Physics.OverlapSphere(
             transform.position, radius, mask, QueryTriggerInteraction.Collide
         );
 
-        // Nächstes gültiges Ziel finden (mit Damageable + AgentStats, nicht self)
+        // Find next valid target (with Damageable + AgentStats, not self)
         Damageable targetHp = null;
         AgentStats targetStats = null;
         float bestDist = float.MaxValue;
 
         foreach (var h in hits)
         {
-            if (h.transform.root == transform.root) continue; // sich selbst ignorieren
+            if (h.transform.root == transform.root) continue;
 
             var hp   = h.GetComponentInParent<Damageable>();
             var stat = h.GetComponentInParent<AgentStats>();
@@ -80,15 +80,14 @@ public class BiteOnSpace : MonoBehaviour
             }
         }
 
-        // --- 3) Treffer-Logik (immer Animation/Sound; Schaden nur mit Ziel) ---
         if (animatorScript) animatorScript.PlayEatAnimation();
         if (biteSound) biteSound.Play();
 
         if (targetHp != null && targetStats != null)
         {
-            // skalierter Schaden nach Größenverhältnis (weich)
+            // damage + possible heal
             float ratio   = Mathf.Max(0.001f, attackerStats.size / targetStats.size);
-            float dmgMult = Mathf.Clamp(ratio, 0.2f, 2.5f); // kleiner -> 20%, viel größer -> 250%
+            float dmgMult = Mathf.Clamp(ratio, 0.2f, 2.5f); // smaller → 20 %, much larger → 250 %
             float finalDamage = damage * dmgMult;
 
             if (energyManager != null)
@@ -104,25 +103,23 @@ public class BiteOnSpace : MonoBehaviour
             }
 
             // maybe not cool for now
-            // attackerHp.Heal(finalDamage * 0.5f);           // Lifesteal-Stil
+            // attackerHp.Heal(finalDamage * 0.5f);
 
-            attackerStats.Grow(0.02f * ratio);             // optionales Wachstum
+            attackerStats.Grow(0.02f * ratio);
 
-            // leichter Selbst-Dämpfer wenn kleiner
             if (ratio < 1f)
             {
                 var rb = attackerStats.GetComponent<Rigidbody>();
                 if (rb) rb.linearVelocity *= 0.7f;
             }
         }
-        // else: Luftbiss – nur Animation/Sound, keine Heilung/Schaden
 
         nextBiteTime = Time.time + biteCooldown;
     }
 
     float GetBiteRadius()
     {
-        // Versuche, sinnvolle Reichweite aus vorhandenem Collider zu lesen
+        // range from bite collider
         float scale = Mathf.Max(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
 
         var sphere = GetComponent<SphereCollider>();
@@ -139,7 +136,6 @@ public class BiteOnSpace : MonoBehaviour
         var box = GetComponent<BoxCollider>();
         if (box)
         {
-            // halbe Diagonale der Box als Radius
             Vector3 ext = Vector3.Scale(box.size * 0.5f, transform.lossyScale);
             return ext.magnitude;
         }
