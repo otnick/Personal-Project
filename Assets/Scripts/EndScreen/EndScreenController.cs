@@ -62,8 +62,7 @@ public class EndScreenController : MonoBehaviour
         if (transitionFish.transform.position.x >= targetPos.x)
         {
             transitioning = false;
-            // hier zentralen Fade benutzen
-            GameController.Instance?.ToGame();   // oder ToTitle(), je nach Ziel
+            GameController.Instance?.ToGame(); 
         }
     }
 

@@ -93,7 +93,7 @@ public class BiteOnSpace : MonoBehaviour
             if (energyManager != null)
             {
                 // Energiegewinn beim erfolgreichen Biss
-                energyManager.currentEnergy = Mathf.Min(energyManager.maxEnergy, energyManager.currentEnergy + finalDamage * 0.5f);
+                energyManager.currentEnergy = Mathf.Min(energyManager.maxEnergy, energyManager.currentEnergy + finalDamage);
             }
 
             bool isDead = targetHp.TakeDamage(finalDamage);
@@ -105,7 +105,7 @@ public class BiteOnSpace : MonoBehaviour
             // maybe not cool for now
             // attackerHp.Heal(finalDamage * 0.5f);
 
-            attackerStats.Grow(0.02f * ratio);
+            attackerStats.Grow(0.05f * ratio);
 
             if (ratio < 1f)
             {
