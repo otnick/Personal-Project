@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Collider))]
 public class BiteOnSpace : MonoBehaviour
 {
+    public InputActionReference biteActionReference;
     [Header("Bite")]
     public float damage = 25f;
     public float biteCooldown = 0.4f;
@@ -36,7 +38,8 @@ public class BiteOnSpace : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        // if (Input.GetKeyDown(KeyCode.Space))
+        if (biteActionReference.action.WasPressedThisFrame())
             TryBite();
     }
 

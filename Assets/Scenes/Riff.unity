@@ -5845,6 +5845,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ced4dab4a45c34ca55105a8f6d19b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boostActionReference: {fileID: -7471211009204490832, guid: 959b113afb35f294da836230cbdd927d, type: 3}
+  moveActionReference: {fileID: -1680190386980627800, guid: 959b113afb35f294da836230cbdd927d, type: 3}
   boostMult: 1.5
   boostDuration: 2
   boostCooldown: 5
@@ -5864,7 +5866,6 @@ MonoBehaviour:
     m_Bits: 8
   attackerStats: {fileID: 829690130}
   damageable: {fileID: 829690132}
-  isDead: 0
 --- !u!65 &829690127
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6473,6 +6474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4b34d7c43883742afd1d6ecbcbc883, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  biteActionReference: {fileID: -2099379676528639254, guid: 959b113afb35f294da836230cbdd927d, type: 3}
   damage: 25
   biteCooldown: 0.4
   agentMask:
@@ -6958,8 +6960,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 829690125}
   followSpeed: 2
-  fadeGroup: {fileID: 157381804}
-  fadeInDuration: 1
 --- !u!1 &1800065097
 GameObject:
   m_ObjectHideFlags: 0

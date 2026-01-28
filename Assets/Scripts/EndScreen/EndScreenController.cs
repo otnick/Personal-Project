@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class EndScreenController : MonoBehaviour
 {
+    public InputActionReference interactActionReference;
     public GameObject transitionFish;
     public GameObject fishBones;
     public TMPro.TextMeshProUGUI endText;
@@ -30,7 +32,8 @@ public class EndScreenController : MonoBehaviour
 
     void Update()
     {
-        if (!transitioning && Input.GetKeyDown(KeyCode.Space))
+        // if (!transitioning && Input.GetKeyDown(KeyCode.Space))
+        if (!transitioning && interactActionReference.action.WasPressedThisFrame())
             StartTransition();
 
         if (transitioning)

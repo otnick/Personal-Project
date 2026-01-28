@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
+    public InputActionReference interactActionReference;
 
     public KillCounter killCounter;
     public Timer gameTimer;

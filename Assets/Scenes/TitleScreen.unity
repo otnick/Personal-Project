@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79bf4c7b952ad6479761a991f003c8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactActionReference: {fileID: 0}
   killCounter: {fileID: 0}
   gameTimer: {fileID: 0}
   playerController: {fileID: 0}
@@ -5591,6 +5592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 723cda1227f00b34997637aae63e3291, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactActionReference: {fileID: -5517040123699886543, guid: 959b113afb35f294da836230cbdd927d, type: 3}
   speed: 0.5
   acceleration: 2
   tiltMaxDeg: 10

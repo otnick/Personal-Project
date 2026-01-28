@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TitleScreenController : MonoBehaviour
 {
+    public InputActionReference interactActionReference;
     public float speed = 0.5f;
     public float acceleration = 2f;
     Vector3 velocity;
@@ -31,7 +33,8 @@ public class TitleScreenController : MonoBehaviour
         float currentTiltZ = Mathf.LerpAngle(transform.eulerAngles.z, targetTiltZ, tiltLerp * dt);
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltZ);
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // if (Input.GetKeyDown(KeyCode.Space))
+        if (interactActionReference.action.WasPressedThisFrame())
         {
             if (audioSource && !audioSource.isPlaying) audioSource.Play();
             StartCoroutine(DiveThenGoToGame());

@@ -1,7 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public InputActionReference boostActionReference;
+    public InputActionReference moveActionReference;
     [Header("Movement")]
     private float baseSpeed;        // kommt aus AgentStats
     private float size;
@@ -87,9 +90,13 @@ public class PlayerController : MonoBehaviour
             return; // no movement or actions when dead
         }
         // inputs
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
-        bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
+        // float h = Input.GetAxis("Horizontal");
+        // float v = Input.GetAxis("Vertical");
+        Vector2 moveInput = moveActionReference.action.ReadValue<Vector2>();
+        float h = moveInput.x;
+        float v = moveInput.y;
+        // bool shiftDown = Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
+        bool shiftDown = boostActionReference.action.WasPressedThisFrame();
 
         // Basis-Speed evtl. aus Stats aktualisieren
         var stats = GetComponent<AgentStats>();
