@@ -11,9 +11,6 @@ GameObject:
   - component: {fileID: 546296584414048009}
   - component: {fileID: 502309955406292155}
   - component: {fileID: 1925645202386733602}
-  - component: {fileID: 5904207631713912522}
-  - component: {fileID: 5435603753145080321}
-  - component: {fileID: 635614429353725607}
   m_Layer: 3
   m_Name: Shark
   m_TagString: Untagged
@@ -86,58 +83,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6668397, y: 0.14106348, z: 0.15612738}
   m_Center: {x: 0.035373904, y: 0.02099155, z: -0.0008416295}
---- !u!114 &5904207631713912522
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4748182797124721481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b829c14c26f02849994ad036f9814ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: 10
-  baseSpeed: 10
-  visual: {fileID: 546296584414048009}
-  speedPerSize: 5
---- !u!114 &5435603753145080321
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4748182797124721481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 639f709f4619ff94da4701c0ade8057d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 200
-  currentHealth: 0
---- !u!114 &635614429353725607
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4748182797124721481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e2d1960439901c4bba5ef743be656a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stats: {fileID: 5904207631713912522}
-  agentMask:
-    serializedVersion: 2
-    m_Bits: 8
-  senseRadius: 20
-  accel: 20
-  idleSpeed: 1
-  idleTurnEvery: 5
-  sizeMargin: 1
-  damageable: {fileID: 5435603753145080321}
 --- !u!1 &7145369055909270330
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,15 +150,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4b34d7c43883742afd1d6ecbcbc883, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  biteActionReference: {fileID: 0}
   damage: 25
   biteCooldown: 0.4
   agentMask:
     serializedVersion: 2
     m_Bits: 8
   fallbackRadius: 0.8
-  attackerStats: {fileID: 5904207631713912522}
+  attackerStats: {fileID: 0}
   animatorScript: {fileID: 3607052858468386008}
   biteSound: {fileID: 7309568340439936520}
+  gameController: {fileID: 0}
 --- !u!1 &7870298668781541045
 GameObject:
   m_ObjectHideFlags: 0

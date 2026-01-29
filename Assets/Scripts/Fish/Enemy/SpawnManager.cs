@@ -6,14 +6,20 @@ public class EnemyEntry
     public GameObject prefab;
     public float spawnRate = 1f;
 }
+
 public class SpawnManager : MonoBehaviour
 {
     public EnemyEntry[] enemyEntries;
-    public Vector2 areaX = new Vector2(-20, 20);
-    public Vector2 areaY = new Vector2(-8, 8);
-    public GameObject player;
+
+    [Header("Spawnbereich (3D-Sphäre um ein zentrales Empty)")]
+    public Transform spawnCenter;    // <--- festes Empty in der Szene
+    public float minSpawnRadius = 8f;
+    public float maxSpawnRadius = 20f;
+
     public float spawnsPerMinute = 30f;
+
     float acc;
+
     void Start()
     {
         SpawnOne();
@@ -21,19 +27,27 @@ public class SpawnManager : MonoBehaviour
 
     void Update()
     {
-        if (!player) return;
-        if (player.GetComponent<Damageable>()?.currentHealth <= 0f) return;
+        if (spawnCenter == null) return; // kein Spieler nötig mehr
+        if (spawnCenter.GetComponent<Damageable>()?.currentHealth <= 0f) return;
+
         acc += spawnsPerMinute / 60f * Time.deltaTime;
-        while (acc >= 1f) { SpawnOne(); acc -= 1f; }
+        while (acc >= 1f)
+        {
+            SpawnOne();
+            acc -= 1f;
+        }
     }
-    
+
     void SpawnOne()
     {
+        if (spawnCenter == null) return;
         if (enemyEntries == null || enemyEntries.Length == 0) return;
 
         // weighted selection
         float total = 0f;
-        foreach (var e in enemyEntries) total += Mathf.Max(0.0001f, e.spawnRate);
+        foreach (var e in enemyEntries)
+            total += Mathf.Max(0.0001f, e.spawnRate);
+
         float r = Random.value * total;
 
         foreach (var e in enemyEntries)
@@ -41,25 +55,33 @@ public class SpawnManager : MonoBehaviour
             r -= Mathf.Max(0.0001f, e.spawnRate);
             if (r <= 0f)
             {
-                Vector3 playerPos = player.transform.position;
-                Vector3 pos = Vector3.zero;
-                float minDistance = 8f;   // enemies must spawn at least 8 units away
-                int safety = 30;          // max 30 attempts to avoid infinite loops
+                Vector3 centerPos = spawnCenter.position;
+                Vector3 pos = centerPos;
+                int safety = 30;
 
                 for (int i = 0; i < safety; i++)
                 {
-                    // random point around the player
-                    Vector3 offset = new Vector3(Random.Range(areaX.x, areaX.y),
-                                                Random.Range(areaY.x, areaY.y), 0f);
-                    pos = playerPos + offset;
+                    Vector3 dir = Random.onUnitSphere;
+                    float radius = Random.Range(minSpawnRadius, maxSpawnRadius);
+                    Vector3 candidate = centerPos + dir * radius;
 
-                    // far enough away?
-                    if (Vector3.Distance(playerPos, pos) >= minDistance)
+                    // optionaler Mindestabstand (redundant hier, aber kann bleiben)
+                    if (Vector3.Distance(centerPos, candidate) >= minSpawnRadius)
+                    {
+                        pos = candidate;
                         break;
+                    }
                 }
 
-                pos.z = 0f;
-                Instantiate(e.prefab, pos, Quaternion.identity);
+                GameObject instance = Instantiate(e.prefab, pos, Quaternion.identity);
+
+                // dem FishAI das feste Zentrum übergeben (falls vorhanden)
+                var fishAI = instance.GetComponent<FishAI>();
+                if (fishAI != null)
+                {
+                    fishAI.center = spawnCenter;
+                }
+
                 return;
             }
         }
