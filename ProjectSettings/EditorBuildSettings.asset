@@ -8,17 +8,17 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TitleScreen.unity
     guid: 48d85cd973e7e05478267cb1e2f794bb
   - enabled: 1
     path: Assets/Scenes/Riff.unity
     guid: a7a045ca128df2c4cafe6bc062a34fc2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/EndScreen.unity
     guid: 9a8da529236653d4d951a65b5606622e
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 959b113afb35f294da836230cbdd927d, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 261cbebbc013e4b48b43c1e34983ac04, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: d3e2a1dcbcd803e45b1ab135d2649d89, type: 2}
   m_UseUCBPForAssetBundles: 0
