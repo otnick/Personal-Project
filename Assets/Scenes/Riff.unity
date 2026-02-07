@@ -1233,13 +1233,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyEntries:
-  - prefab: {fileID: 1402359668560620805, guid: 6f5746c8eaa7d0147b1ff1b374f45bf7, type: 3}
+  - prefab: {fileID: 6475195115411703780, guid: d8ee04dd97fece247aaa343838d2fee4, type: 3}
     spawnRate: 6
-  - prefab: {fileID: 3563038920971644787, guid: 888b818ad2a0b4241b14db0c7c810e7d, type: 3}
+  - prefab: {fileID: 6475195115411703780, guid: 84a965aca37380645ae3228e0fcc72ae, type: 3}
     spawnRate: 3
-  - prefab: {fileID: 5982992220988954152, guid: 2961629667ffbb14faddb1850276551f, type: 3}
+  - prefab: {fileID: 6475195115411703780, guid: 77bdbb71a664ab24e960b89904bb1861, type: 3}
     spawnRate: 0.5
-  - prefab: {fileID: 7643095681242217127, guid: ecba827987afa46449bd4436afe012eb, type: 3}
+  - prefab: {fileID: 6475195115411703780, guid: 6f6a0b21a23e27c499cc11e3c041470d, type: 3}
     spawnRate: 2
   spawnCenter: {fileID: 629736926}
   minSpawnRadius: 8
@@ -1587,15 +1587,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ced4dab4a45c34ca55105a8f6d19b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boostActionReference: {fileID: -7471211009204490832, guid: 959b113afb35f294da836230cbdd927d, type: 3}
-  moveActionReference: {fileID: -1680190386980627800, guid: 959b113afb35f294da836230cbdd927d, type: 3}
+  boostActionReference: {fileID: 2062819448}
+  moveActionReference: {fileID: 1741325458}
+  verticalActionReference: {fileID: 1308527183}
+  reference: {fileID: 0}
+  planar: 1
+  verticalSpeed: 2
   boostMult: 1.5
   boostDuration: 2
   boostCooldown: 5
   acceleration: 20
   deceleration: 10
-  tiltMaxDeg: 40
-  tiltLerp: 36
+  rotationLerp: 10
   animatorScript: {fileID: 1283319093}
   biteSound: {fileID: 962588274}
   fadeGroup: {fileID: 0}
@@ -1727,6 +1730,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 658028464602686504, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_UseGravity
       value: 0
@@ -1774,6 +1781,46 @@ PrefabInstance:
     - target: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5033801203051696737, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480925242510836759, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_EnableTurnAround
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480925242510836759, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_EnableTurnLeftRight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480925242510836759, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_LeftHandTurnInput.m_InputActionReference
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480925242510836759, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_RightHandTurnInput.m_InputActionReference
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054646180837666701, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_JumpInput.m_InputActionReferenceValue
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7054646180837666701, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_JumpInput.m_InputActionReferencePerformed
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7347985736721345035, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_LeftHandTurnInput.m_InputActionReference
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7347985736721345035, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_RightHandTurnInput.m_InputActionReference
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7399425242140339816, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_UseCharacterControllerIfExists
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2092,7 +2139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1031304038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2334,6 +2381,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a42f32e289e81264b82cad38f3345916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1308527183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: XRI Fish/Vertical
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_ActionId: 875a1720-d7cd-4314-b97d-17dbebf6a499
 --- !u!1 &1426463849
 GameObject:
   m_ObjectHideFlags: 0
@@ -2383,6 +2444,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1741325458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: XRI Fish/Move
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_ActionId: 7c00e763-576e-45e6-8a58-ef3a01a43e2b
 --- !u!1 &1762901551
 GameObject:
   m_ObjectHideFlags: 0
@@ -7525,6 +7600,20 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1283319093}
   m_SourcePrefab: {fileID: 100100000, guid: f8daf6ba34c3ff240bf57b48dfb61026, type: 3}
+--- !u!114 &2062819448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc1515ab76e54f068e2f2207940fab32, type: 3}
+  m_Name: XRI Fish/Sprint
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.InputActionReference
+  m_Asset: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_ActionId: c8549ea3-5c44-4246-9d0d-3928c14c7813
 --- !u!1001 &1715341760371869681
 PrefabInstance:
   m_ObjectHideFlags: 0

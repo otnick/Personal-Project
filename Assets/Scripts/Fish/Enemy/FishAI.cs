@@ -5,47 +5,66 @@ public class FishAI : MonoBehaviour
 {
     [Header("Agent")]
     public AgentStats stats;
-    public LayerMask agentMask;       // Layer applied to player and fish
-    public float senseRadius = 12f; 
+    [Tooltip("IMPORTANT: should include the Fish layer(s). If you include Player here, fish may chase player depending on size.")]
+    public LayerMask agentMask;
+    public float senseRadius = 12f;
     public float accel = 20f;
-    public float idleSpeed = 2f; 
+    public float idleSpeed = 2f;
     public float idleTurnEvery = 3f;
-    public float sizeMargin = 1.0f;   // larger than = my.size > other.size * sizeMargin
-    public Damageable damageable;     // reference to self damageable component
+    [Tooltip("larger than = my.size > other.size * sizeMargin")]
+    public float sizeMargin = 1.0f;
+    public Damageable damageable;
 
     [Header("Schwimmbereich")]
-    public Transform center;          // Ursprung (z. B. Player oder Empty)
-    public float swimRadius = 8f;     // Radius der Kugel, in der die Fische bleiben
-    public float boundaryStrength = 1.0f; // wie stark sie zurück in die Kugel gelenkt werden
+    public Transform center;              
+    public float swimRadius = 8f;
+    public float boundaryStrength = 1.0f;
 
     [Header("Rotation / Look")]
     [Tooltip("Falls dein Mesh nicht nach +Z schaut, trage hier den Euler-Offset ein (z.B. 0, -90, 0).")]
     public Vector3 forwardOffsetEuler = Vector3.zero;
-    public float pitchFactor = 4f;    // wie stark pitch auf vertikale Geschwindigkeit reagiert
-    public float maxPitch = 35f;      // maximaler Pitch in Grad
-    public float rotSpeed = 8f;       // Slerp-Geschwindigkeit
+    public float pitchFactor = 4f;
+    public float maxPitch = 35f;
+    public float rotSpeed = 8f;
+
+    [Header("Attack")]
+    [Tooltip("Distance at which a bite is applied (root-to-root distance).")]
+    public float attackRange = 0.8f;
+    public float biteDamage = 10f;
+    public float biteCooldown = 0.6f;
+
+    [Header("Grab / XR (set by a bridge script)")]
+    public bool isGrabbed;
 
     [Header("Debug")]
     public bool drawDebugGizmos = false;
+    public bool debugDrawTarget = false;
 
     Rigidbody rb;
     Vector3 idleDir = Vector3.right;
     float nextIdleTurn;
+    float nextBiteTime = 0f;
+
+    Transform currentTargetSmaller;
+    Transform currentThreatBigger;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = false;
 
-        // Verhindere Roll (Drehung um lokale Vorwärtsachse). Erlaube Yaw & Pitch durch manuelles Setzen.
+        // Prevent roll
         rb.constraints = RigidbodyConstraints.FreezeRotationZ;
+
+        // VR-stable defaults
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         if (!stats) stats = GetComponent<AgentStats>();
         if (!damageable) damageable = GetComponent<Damageable>();
 
         if (!center)
         {
-            // fallback: ein gemeinsames, simples Global-Center vermeiden mehrere GameObjects pro Fisch
             var go = GameObject.Find("FishCenter_Global");
             if (go == null)
             {
@@ -60,15 +79,25 @@ public class FishAI : MonoBehaviour
 
     void FixedUpdate()
     {
+        // XR grab pauses AI
+        if (isGrabbed)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            return;
+        }
+
+        // Dead fish don't move
         if (damageable != null && damageable.currentHealth <= 0f)
         {
             rb.linearVelocity = Vector3.zero;
-            return; // dead fish don't move
+            return;
         }
 
-        // Fallback if no agent mask is set
+        // Fallback if no mask is set
         int mask = agentMask.value != 0 ? agentMask.value : ~0;
 
+        // Detect nearby agents
         var hits = Physics.OverlapSphere(
             transform.position,
             senseRadius,
@@ -77,68 +106,115 @@ public class FishAI : MonoBehaviour
         );
 
         Transform nearestSmaller = null; float dSmall = float.MaxValue;
-        Transform nearestBigger  = null; float dBig   = float.MaxValue;
+        Transform nearestBigger = null;  float dBig = float.MaxValue;
 
         float my = stats ? stats.size : 1f;
         Vector3 pos = transform.position;
 
+        // IMPORTANT:
+        // Colliders are on child objects ("Collider"), AgentStats is on root.
+        // So we must resolve to the parent/root via GetComponentInParent.
         foreach (var h in hits)
         {
-            if (h.transform == transform) continue;
-            var s = h.GetComponent<AgentStats>(); if (!s) continue;
+            var otherStats = h.GetComponentInParent<AgentStats>();
+            if (!otherStats) continue;
 
-            float other = s.size;
-            float distSqr = (h.transform.position - pos).sqrMagnitude;
+            Transform otherRoot = otherStats.transform;
+            if (otherRoot == transform) continue;
+
+            float other = otherStats.size;
+            float distSqr = (otherRoot.position - pos).sqrMagnitude;
 
             if (my > other * sizeMargin)
             {
-                if (distSqr < dSmall) { dSmall = distSqr; nearestSmaller = h.transform; }
+                if (distSqr < dSmall) { dSmall = distSqr; nearestSmaller = otherRoot; }
             }
             else if (other > my * sizeMargin)
             {
-                if (distSqr < dBig) { dBig = distSqr; nearestBigger = h.transform; }
+                if (distSqr < dBig) { dBig = distSqr; nearestBigger = otherRoot; }
             }
         }
 
+        currentTargetSmaller = nearestSmaller;
+        currentThreatBigger = nearestBigger;
+
+        // Behaviour
         if (nearestBigger)
         {
             // flee
             Vector3 dir = (nearestBigger.position - pos).normalized * -1f;
-            MoveSimple(dir, hunt:false);
+            MoveSimple(dir);
         }
         else if (nearestSmaller)
         {
+            Vector3 toTarget = nearestSmaller.position - pos;
+
             // chase
-            Vector3 dir = (nearestSmaller.position - pos).normalized;
-            MoveSimple(dir, hunt:true);
+            if (toTarget.sqrMagnitude > 1e-6f)
+                MoveSimple(toTarget.normalized);
+
+            // bite when close (root-to-root distance)
+            float dist = toTarget.magnitude;
+            if (dist <= attackRange && Time.time >= nextBiteTime)
+            {
+                TryBite(nearestSmaller);
+                nextBiteTime = Time.time + biteCooldown;
+            }
         }
         else
         {
-            IdleSimple(); // random drift
+            // random drift
+            IdleSimple();
         }
 
-        // In Kugel halten
+        // Keep in swim sphere
         StayInSphere();
 
-        // Dämpfe physikalische Drehung (wir setzen Rotation manuell)
+        // We set rotation manually
         rb.angularVelocity = Vector3.zero;
-
         FaceByVelocity();
+
+        if (debugDrawTarget)
+        {
+            if (nearestSmaller) Debug.DrawLine(pos, nearestSmaller.position, Color.red, 0.02f);
+            if (nearestBigger) Debug.DrawLine(pos, nearestBigger.position, Color.blue, 0.02f);
+        }
     }
 
-    void MoveSimple(Vector3 dir, bool hunt)
+    void TryBite(Transform targetRoot)
+    {
+        if (targetRoot == null) return;
+
+        // Ensure it is still smaller (in case sizes changed)
+        float my = stats ? stats.size : 1f;
+        var otherStats = targetRoot.GetComponent<AgentStats>();
+        float other = otherStats ? otherStats.size : 1f;
+        if (!(my > other * sizeMargin)) return;
+
+        var otherDamageable = targetRoot.GetComponent<Damageable>();
+        if (!otherDamageable) return;
+
+        // If your Damageable has a method, prefer it:
+        // otherDamageable.TakeDamage(biteDamage);
+
+        // Fallback (matches your earlier usage of currentHealth):
+        otherDamageable.currentHealth -= biteDamage;
+        if (otherDamageable.currentHealth < 0f) otherDamageable.currentHealth = 0f;
+    }
+
+    void MoveSimple(Vector3 dir)
     {
         float maxSpeed = stats ? stats.CurrentSpeed : 6f;
         if (dir.sqrMagnitude < 1e-6f) return;
 
-        Vector3 desiredVel = dir.normalized * maxSpeed; // no arrive when hunting
+        Vector3 desiredVel = dir.normalized * maxSpeed;
         rb.linearVelocity = Vector3.MoveTowards(
             rb.linearVelocity,
             desiredVel,
             accel * Time.fixedDeltaTime
         );
 
-        // harte Kappe
+        // hard cap
         var v = rb.linearVelocity;
         if (v.magnitude > maxSpeed)
             rb.linearVelocity = v.normalized * maxSpeed;
@@ -159,7 +235,6 @@ public class FishAI : MonoBehaviour
 
     void PickNewIdle()
     {
-        // 3D: zufällige Richtung auf der Kugel (gleichmäßig)
         idleDir = Random.onUnitSphere;
         nextIdleTurn = Time.time + idleTurnEvery + Random.Range(-0.8f, 0.8f);
     }
@@ -173,7 +248,6 @@ public class FishAI : MonoBehaviour
 
         if (dist > swimRadius)
         {
-            // Stärke abhängig davon, wie weit außerhalb
             Vector3 dir = toCenter.normalized;
             float maxSpeed = stats ? stats.CurrentSpeed : 6f;
 
@@ -191,28 +265,27 @@ public class FishAI : MonoBehaviour
         Vector3 v = rb.linearVelocity;
         if (v.sqrMagnitude < 0.0004f) return;
 
-        // Yaw (horizontale Ausrichtung) anhand XZ-Komponente
+        // Yaw from XZ
         Vector3 flat = new Vector3(v.x, 0f, v.z);
         Quaternion yawRot;
         if (flat.sqrMagnitude > 1e-6f)
             yawRot = Quaternion.LookRotation(flat.normalized, Vector3.up);
         else
-            yawRot = Quaternion.LookRotation(v.normalized, Vector3.up); // fast nur vertikal
+            yawRot = Quaternion.LookRotation(v.normalized, Vector3.up);
 
-        // Pitch: kippen abhängig von vertical speed
-        float pitchAngle = Mathf.Clamp(-v.y * pitchFactor, -maxPitch, maxPitch); // negative v.y => downwards tilt
+        // Pitch from vertical speed
+        float pitchAngle = Mathf.Clamp(-v.y * pitchFactor, -maxPitch, maxPitch);
         Quaternion pitchRot = Quaternion.AngleAxis(pitchAngle, Vector3.right);
 
         Quaternion targetRot = yawRot * pitchRot;
 
-        // Mesh-forward offset (falls das Modell anders orientiert ist)
+        // Mesh forward offset
         if (forwardOffsetEuler != Vector3.zero)
         {
             Quaternion offset = Quaternion.Euler(forwardOffsetEuler);
             targetRot = targetRot * offset;
         }
 
-        // Smooth rotate
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotSpeed * Time.deltaTime);
 
         if (drawDebugGizmos)
@@ -224,8 +297,18 @@ public class FishAI : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (!center) return;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(center.position, swimRadius);
+        if (center)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(center.position, swimRadius);
+        }
+
+        if (debugDrawTarget)
+        {
+            Gizmos.color = Color.red;
+            if (currentTargetSmaller) Gizmos.DrawLine(transform.position, currentTargetSmaller.position);
+            Gizmos.color = Color.blue;
+            if (currentThreatBigger) Gizmos.DrawLine(transform.position, currentThreatBigger.position);
+        }
     }
 }
