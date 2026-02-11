@@ -22,9 +22,9 @@ public class PlayerController : MonoBehaviour
     public float verticalSpeed = 2f;
 
     [Header("Movement")]
-    private float baseSpeed;            // kommt aus AgentStats
+    private float baseSpeed;
     private float size;
-    public float boostMult = 1.5f;      // 1.5x schneller beim Boost
+    public float boostMult = 1.5f;
     public float boostDuration = 2f;
     public float boostCooldown = 5f;
     public float acceleration = 20f;
@@ -32,7 +32,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
 
     [Header("Rotation")]
-    [Tooltip("Wie schnell der Fisch in Bewegungsrichtung dreht.")]
     public float rotationLerp = 10f;
 
     [Header("Refs")]
@@ -55,10 +54,13 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stats & Damage")]
     public AgentStats attackerStats;
-    public Damageable damageable; // reference to self damageable component
+    public Damageable damageable;
 
     private Rigidbody rb;
     private EnergyManager energyManager;
+
+    // 🔥 LED Status Tracking
+    private bool ledIsOn = false;
 
     // fade in
     public System.Collections.IEnumerator FadeIn()
@@ -79,11 +81,7 @@ public class PlayerController : MonoBehaviour
         if (rb)
         {
             rb.useGravity = false;
-
-            // 3D: Position NICHT einfrieren (anders als 2D Top-Down)
-            // Standard: Roll verhindern (Z-Rotation), ggf. auch Pitch (X) verhindern
             rb.constraints = RigidbodyConstraints.FreezeRotationZ;
-
             rb.linearDamping = 2f;
             rb.angularDamping = 999f;
         }
@@ -112,10 +110,33 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (damageable != null && damageable.isDead)
+        bool isAlive = damageable != null && !damageable.isDead;
+
+        // 🔥 LED INTENSITY LOGIK
+        if (WebSocketController.Instance != null &&
+            WebSocketController.Instance.IsConnected)
         {
-            velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
-            return; // no movement or actions when dead
+            if (isAlive && !ledIsOn)
+            {
+                WebSocketController.Instance.ledIntensity = 255;
+                WebSocketController.Instance.SendLedIntensity();
+                ledIsOn = true;
+            }
+            else if (!isAlive && ledIsOn)
+            {
+                WebSocketController.Instance.ledIntensity = 0;
+                WebSocketController.Instance.SendLedIntensity();
+                ledIsOn = false;
+            }
+        }
+
+        if (!isAlive)
+        {
+            velocity = Vector3.MoveTowards(
+                velocity,
+                Vector3.zero,
+                deceleration * Time.deltaTime);
+            return;
         }
 
         // ---- Inputs ----
@@ -125,14 +146,12 @@ public class PlayerController : MonoBehaviour
 
         bool boostPressed = boostActionReference != null && boostActionReference.action.WasPressedThisFrame();
 
-        // Optional vertical input (-1..1 empfohlen)
         float upDown = 0f;
         if (verticalActionReference != null)
             upDown = verticalActionReference.action.ReadValue<float>();
 
-        // Basis-Speed evtl. aus Stats aktualisieren
-        var stats = GetComponent<AgentStats>();
-        if (stats) baseSpeed = stats.CurrentSpeed;
+        var statsUpdate = GetComponent<AgentStats>();
+        if (statsUpdate) baseSpeed = statsUpdate.CurrentSpeed;
 
         // ---- Energy / Boost ----
         if (energyManager != null && energyManager.currentEnergy > 0f)
@@ -150,7 +169,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             boosting = false;
-            baseSpeed = baseSpeed * 0.5f;
+            baseSpeed *= 0.5f;
         }
 
         if (boostPressed &&
@@ -170,7 +189,6 @@ public class PlayerController : MonoBehaviour
 
         float currentSpeed = baseSpeed * (boosting ? boostMult : 1f);
 
-        // ---- 3D Movement (kamera-relativ) ----
         Transform cam = reference != null ? reference : (Camera.main ? Camera.main.transform : transform);
 
         Vector3 forward = cam.forward;
@@ -178,7 +196,6 @@ public class PlayerController : MonoBehaviour
 
         if (planar)
         {
-            // nur horizontal (XZ)
             forward.y = 0f;
             right.y = 0f;
             forward = forward.sqrMagnitude > 0.0001f ? forward.normalized : Vector3.forward;
@@ -186,47 +203,26 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector3 moveDir = (right * h + forward * v);
-
-        if (planar)
-        {
-            // Hoch/Runter getrennt
-            moveDir += Vector3.up * upDown * verticalSpeed;
-        }
-        else
-        {
-            // Wenn du wirklich 3D relativ zur Blickrichtung willst, könntest du zusätzlich Pitch erlauben.
-            // Standardmäßig lassen wir es trotzdem wie oben.
-            moveDir += Vector3.up * upDown * verticalSpeed;
-        }
+        moveDir += Vector3.up * upDown * verticalSpeed;
 
         Vector3 targetVelocity = (moveDir.sqrMagnitude > 0.0001f ? moveDir.normalized : Vector3.zero) * currentSpeed;
 
-        // Beschleunigen
         velocity = Vector3.MoveTowards(velocity, targetVelocity, acceleration * Time.deltaTime);
 
-        // kleines Fremdschub-Polster
         float pushAllowance = boosting ? 3.0f : 1.0f;
         float maxAllowed = currentSpeed + pushAllowance;
         if (velocity.magnitude > maxAllowed) velocity = velocity.normalized * maxAllowed;
 
-        // ---- Apply Movement ----
         if (damageable != null && damageable.currentHealth > 0f)
         {
             if (rb) rb.MovePosition(rb.position + velocity * Time.deltaTime);
 
-            // Bremsen bei keinem Input
             if (Mathf.Approximately(h, 0f) && Mathf.Approximately(v, 0f) && Mathf.Approximately(upDown, 0f))
                 velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * Time.deltaTime);
 
-            // ---- Rotation: in Bewegungsrichtung schauen ----
-            Vector3 velFlat = velocity;
-
-            // Wenn du bei planar=true keinen Pitch willst, kannst du Y für Rotation ignorieren:
-            // velFlat.y = 0f;
-
-            if (velFlat.sqrMagnitude > 0.01f)
+            if (velocity.sqrMagnitude > 0.01f)
             {
-                Quaternion targetRot = Quaternion.LookRotation(velFlat.normalized, Vector3.up);
+                Quaternion targetRot = Quaternion.LookRotation(velocity.normalized, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationLerp * Time.deltaTime);
             }
         }
@@ -234,14 +230,6 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision c)
     {
-        if (rb) rb.linearVelocity *= 0.6f; // Stöße dämpfen
+        if (rb) rb.linearVelocity *= 0.6f;
     }
 }
-
-/*
-Trigger-Setup für Up/Down (typisch in VR):
-- Lege zwei InputActions an:
-  LeftTrigger (0..1) und RightTrigger (0..1)
-- Dann:
-  upDown = rightTriggerValue - leftTriggerValue;  // ergibt -1..1
-*/

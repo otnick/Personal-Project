@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour
         if (scene.name == sceneGame)
         {
             ResetGame();
-            StartGame(); 
+            StartGame();
         }
         else if (scene.name == sceneTitle)
         {
