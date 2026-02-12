@@ -155,9 +155,9 @@ Transform:
   m_GameObject: {fileID: 5166008789281995290}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.6969281, z: -0, w: 0.71714103}
-  m_LocalPosition: {x: 0, y: 0.742, z: 2.528}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -0.025, y: 0.699, z: 2.541}
+  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8056797782698216888}
   m_LocalEulerAnglesHint: {x: 0, y: -88.362, z: 0}
@@ -178,13 +178,13 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0.05
     m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_NearPlane: 0.19206192
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -292,8 +292,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1110519120086726926}
   - {fileID: 868120262722303201}
+  - {fileID: 1110519120086726926}
   - {fileID: 5297544525132026835}
   - {fileID: 2980772816084621676}
   m_Father: {fileID: 0}
@@ -757,6 +757,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Anglerfish (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 2759767775403592523, guid: ab655178f3d40644a9e29f6db261059c, type: 3}
+      propertyPath: m_LightProbeUsage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2759767775403592523, guid: ab655178f3d40644a9e29f6db261059c, type: 3}
+      propertyPath: m_StaticShadowCaster
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2759767775403592523, guid: ab655178f3d40644a9e29f6db261059c, type: 3}
+      propertyPath: 'm_Materials.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 978b08f652d1c7f4782acf8b8b37590a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

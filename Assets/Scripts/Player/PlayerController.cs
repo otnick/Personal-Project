@@ -15,15 +15,11 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Referenz für die Bewegungsrichtung (meist XR Camera / Head). Wenn leer: Camera.main.")]
     public Transform reference;
 
-    [Tooltip("Wenn true: Stick steuert nur XZ (horizontal). Hoch/Runter über verticalActionReference.")]
-    public bool planar = true;
-
-    [Tooltip("Wie stark Hoch/Runter wirkt (nur relevant, wenn planar=true und verticalActionReference belegt).")]
+    [Tooltip("Zusätzliche vertikale Geschwindigkeit über separaten Input (optional).")]
     public float verticalSpeed = 2f;
 
     [Header("Movement")]
     private float baseSpeed;
-    private float size;
     public float boostMult = 1.5f;
     public float boostDuration = 2f;
     public float boostCooldown = 5f;
@@ -56,10 +52,10 @@ public class PlayerController : MonoBehaviour
     public AgentStats attackerStats;
     public Damageable damageable;
 
+    public float size;
+
     private Rigidbody rb;
     private EnergyManager energyManager;
-
-    // 🔥 LED Status Tracking
     private bool ledIsOn = false;
 
     // fade in
@@ -112,7 +108,6 @@ public class PlayerController : MonoBehaviour
     {
         bool isAlive = damageable != null && !damageable.isDead;
 
-        // 🔥 LED INTENSITY LOGIK
         if (WebSocketController.Instance != null &&
             WebSocketController.Instance.IsConnected)
         {
@@ -191,18 +186,15 @@ public class PlayerController : MonoBehaviour
 
         Transform cam = reference != null ? reference : (Camera.main ? Camera.main.transform : transform);
 
-        Vector3 forward = cam.forward;
+        // Volle 3D-Blickrichtung der Kamera für Vorwärts/Rückwärts
+        Vector3 forward = cam.forward.normalized;
+
+        // Rechts-Vektor horizontal halten für sauberes Strafen
         Vector3 right = cam.right;
+        right.y = 0f;
+        right = right.sqrMagnitude > 0.0001f ? right.normalized : Vector3.right;
 
-        if (planar)
-        {
-            forward.y = 0f;
-            right.y = 0f;
-            forward = forward.sqrMagnitude > 0.0001f ? forward.normalized : Vector3.forward;
-            right = right.sqrMagnitude > 0.0001f ? right.normalized : Vector3.right;
-        }
-
-        Vector3 moveDir = (right * h + forward * v);
+        Vector3 moveDir = right * h + forward * v;
         moveDir += Vector3.up * upDown * verticalSpeed;
 
         Vector3 targetVelocity = (moveDir.sqrMagnitude > 0.0001f ? moveDir.normalized : Vector3.zero) * currentSpeed;
