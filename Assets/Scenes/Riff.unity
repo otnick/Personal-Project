@@ -1361,7 +1361,7 @@ MonoBehaviour:
   acceleration: 20
   deceleration: 10
   rotationLerp: 10
-  yawOffset: 90
+  yawOffset: -90
   animatorScript: {fileID: 1283319093}
   biteSound: {fileID: 962588274}
   fadeGroup: {fileID: 1762901553}
@@ -1375,8 +1375,6 @@ MonoBehaviour:
   attackerStats: {fileID: 829690130}
   damageable: {fileID: 829690132}
   size: 0
-  showControlPanel: 1
-  controlPanel: {fileID: 0}
   gc: {fileID: 0}
 --- !u!65 &829690127
 BoxCollider:
