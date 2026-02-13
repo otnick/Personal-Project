@@ -7,15 +7,12 @@ public class PlayerController : MonoBehaviour
     [Header("Input Actions")]
     public InputActionReference boostActionReference;
     public InputActionReference moveActionReference;
-
-    [Tooltip("Optional: -1..1 (z.B. Right Stick Y). Für Trigger-Setup siehe Kommentar unten.")]
     public InputActionReference verticalActionReference;
+    public InputActionReference openMenuActionReference;
 
     [Header("3D / VR Reference")]
-    [Tooltip("Referenz für die Bewegungsrichtung (meist XR Camera / Head). Wenn leer: Camera.main.")]
     public Transform reference;
 
-    [Tooltip("Zusätzliche vertikale Geschwindigkeit über separaten Input (optional).")]
     public float verticalSpeed = 2f;
 
     [Header("Movement")]
@@ -29,6 +26,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Rotation")]
     public float rotationLerp = 10f;
+    public float yawOffset = 0f;
 
     [Header("Refs")]
     public AnimatorScript animatorScript;
@@ -57,6 +55,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private EnergyManager energyManager;
     private bool ledIsOn = false;
+    public GameController gc;
 
     // fade in
     public System.Collections.IEnumerator FadeIn()
@@ -73,6 +72,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        gc = FindFirstObjectByType<GameController>();
         rb = GetComponent<Rigidbody>();
         if (rb)
         {
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // ---- Inputs ----
+        // Inputs
         Vector2 moveInput = moveActionReference != null ? moveActionReference.action.ReadValue<Vector2>() : Vector2.zero;
         float h = moveInput.x;
         float v = moveInput.y;
@@ -148,7 +148,7 @@ public class PlayerController : MonoBehaviour
         var statsUpdate = GetComponent<AgentStats>();
         if (statsUpdate) baseSpeed = statsUpdate.CurrentSpeed;
 
-        // ---- Energy / Boost ----
+        // Energy / Boost
         if (energyManager != null && energyManager.currentEnergy > 0f)
         {
             if (boosting)
@@ -214,7 +214,8 @@ public class PlayerController : MonoBehaviour
 
             if (velocity.sqrMagnitude > 0.01f)
             {
-                Quaternion targetRot = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+                Quaternion targetRot = Quaternion.LookRotation(velocity.normalized, Vector3.up)
+                    * Quaternion.Euler(0f, yawOffset, 0f);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationLerp * Time.deltaTime);
             }
         }
@@ -224,4 +225,5 @@ public class PlayerController : MonoBehaviour
     {
         if (rb) rb.linearVelocity *= 0.6f;
     }
+
 }
