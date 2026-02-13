@@ -33,8 +33,8 @@ public class EndScreenController : MonoBehaviour
     void Update()
     {
         // if (!transitioning && Input.GetKeyDown(KeyCode.Space))
-        if (!transitioning && interactActionReference.action.WasPressedThisFrame())
-            StartTransition();
+        // if (!transitioning && interactActionReference.action.WasPressedThisFrame())
+        //     StartTransition();
 
         if (transitioning)
             MoveFish();
@@ -75,5 +75,10 @@ public class EndScreenController : MonoBehaviour
         if (animatorScript) animatorScript.PlayEatAnimation();
         if (biteSound) biteSound.Play();
         if (fishBones) fishBones.SetActive(false);
+    }
+
+    public void OnButtonRestart()
+    {
+        StartTransition();
     }
 }

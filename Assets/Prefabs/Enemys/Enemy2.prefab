@@ -264,8 +264,12 @@ MonoBehaviour:
   pitchFactor: 4
   maxPitch: 35
   rotSpeed: 8
-  drawDebugGizmos: 0
+  attackRange: 0.8
+  biteDamage: 10
+  biteCooldown: 0.6
   isGrabbed: 0
+  drawDebugGizmos: 0
+  debugDrawTarget: 0
 --- !u!114 &-8961111700539314531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,7 +663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8215207850661545695, guid: d0adbc09aba1e6243a00b000790556ec, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8752258631097606218, guid: d0adbc09aba1e6243a00b000790556ec, type: 3}
       propertyPath: m_Pivot.x

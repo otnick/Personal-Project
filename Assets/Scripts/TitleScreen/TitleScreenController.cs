@@ -34,11 +34,11 @@ public class TitleScreenController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, currentTiltZ);
 
         // if (Input.GetKeyDown(KeyCode.Space))
-        if (interactActionReference.action.WasPressedThisFrame())
-        {
-            if (audioSource && !audioSource.isPlaying) audioSource.Play();
-            StartCoroutine(DiveThenGoToGame());
-        }
+        // if (interactActionReference.action.WasPressedThisFrame())
+        // {
+        //     if (audioSource && !audioSource.isPlaying) audioSource.Play();
+        //     StartCoroutine(DiveThenGoToGame());
+        // }
     }
 
     System.Collections.IEnumerator DiveThenGoToGame()
@@ -63,5 +63,11 @@ public class TitleScreenController : MonoBehaviour
         }
 
         GameController.Instance?.ToGame();
+    }
+
+    public void OnButtonStart()
+    {
+        if (audioSource && !audioSource.isPlaying) audioSource.Play();
+            StartCoroutine(DiveThenGoToGame());
     }
 }
